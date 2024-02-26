@@ -47,6 +47,8 @@ const Topbar = (): JSX.Element => {
                 ml: '-18px',
                 px: 0,
               }}
+              component="a"
+              href="/"
             >
               <img
                 src="/assets/images/pluto-logo.svg"
@@ -65,8 +67,7 @@ const Topbar = (): JSX.Element => {
                 variant="contained"
                 size="small"
                 component="a"
-                href="#"
-                target="_blank"
+                href="/dashboard"
               >
                 Get Started
               </Button>

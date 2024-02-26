@@ -71,6 +71,8 @@ const Hero = (): JSX.Element => {
             <Button
               variant="contained"
               color="primary"
+              component="a"
+              href="/dashboard"
             >
               Start now
             </Button>

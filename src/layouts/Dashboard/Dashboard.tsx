@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import CssBaseline from '@mui/material/CssBaseline';
 import { useTheme, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 
-import { Topbar, Sidebar } from '@/layouts/Dashboard/components';
+import { Topbar, Sidebar, AuthDialog } from '@/layouts/Dashboard/components';
 
 interface Props {
   children: React.ReactNode;
@@ -17,7 +17,8 @@ const Dashboard = ({ children }: Props): JSX.Element => {
     defaultMatches: true,
   });
 
-  const [openSidebar, setOpenSidebar] = useState(false);
+  const [openSidebar, setOpenSidebar] = useState<boolean>(false);
+  const [openAuthDialog, setOpenAuthDialog] = useState<boolean>(false);
 
   const handleSidebarOpen = (): void => {
     setOpenSidebar(true);
@@ -26,6 +27,14 @@ const Dashboard = ({ children }: Props): JSX.Element => {
   const handleSidebarClose = (): void => {
     setOpenSidebar(false);
   };
+
+  const handleOpenAuthDialog = useCallback((): void => {
+    setOpenAuthDialog(true);
+  }, []);
+
+  const handleCloseAuthDialog = useCallback((): void => {
+    setOpenAuthDialog(false);
+  }, []);
 
   const open = isMd ? false : openSidebar;
 
@@ -47,13 +56,17 @@ const Dashboard = ({ children }: Props): JSX.Element => {
           paddingX={2}
           paddingY={{ xs: 1, sm: 1.5 }}
         >
-          <Topbar onSidebarOpen={handleSidebarOpen} />
+          <Topbar
+            onSidebarOpen={handleSidebarOpen}
+            handleOpenAuthDialog={handleOpenAuthDialog}
+          />
         </Box>
       </AppBar>
       <Sidebar
         onClose={handleSidebarClose}
         open={open}
         variant={isMd ? 'permanent' : 'temporary'}
+        handleOpenAuthDialog={handleOpenAuthDialog}
       />
       <main>
         <Box height={{ xs: 58, sm: 66, md: 71 }} />
@@ -78,6 +91,12 @@ const Dashboard = ({ children }: Props): JSX.Element => {
           </Box>
         </Box>
       </main>
+      {openAuthDialog && (
+        <AuthDialog
+          onClose={handleCloseAuthDialog}
+          open={openAuthDialog}
+        />
+      )}
     </Box>
   );
 };

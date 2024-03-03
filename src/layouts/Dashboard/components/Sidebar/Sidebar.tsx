@@ -6,9 +6,15 @@ interface Props {
   onClose: () => void;
   open: boolean;
   variant: 'permanent' | 'persistent' | 'temporary' | undefined;
+  handleOpenAuthDialog: () => void;
 }
 
-const Sidebar = ({ open, variant, onClose }: Props): JSX.Element => {
+const Sidebar = ({
+  open,
+  variant,
+  onClose,
+  handleOpenAuthDialog,
+}: Props): JSX.Element => {
   return (
     <Drawer
       anchor="left"
@@ -25,7 +31,7 @@ const Sidebar = ({ open, variant, onClose }: Props): JSX.Element => {
         },
       }}
     >
-      <SidebarNav />
+      <SidebarNav handleOpenAuthDialog={handleOpenAuthDialog} />
     </Drawer>
   );
 };

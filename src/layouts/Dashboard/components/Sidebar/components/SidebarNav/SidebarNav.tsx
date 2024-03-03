@@ -117,7 +117,11 @@ const sideBarItems = [
   },
 ];
 
-const SidebarNav = (): JSX.Element => {
+interface Props {
+  handleOpenAuthDialog: () => void;
+}
+
+const SidebarNav = ({ handleOpenAuthDialog }: Props): JSX.Element => {
   return (
     <Box padding={2}>
       {sideBarItems.map((item, i) => (
@@ -176,6 +180,7 @@ const SidebarNav = (): JSX.Element => {
             </g>
           </svg>
         }
+        onClick={handleOpenAuthDialog}
       >
         Sign in with Google
       </Button>

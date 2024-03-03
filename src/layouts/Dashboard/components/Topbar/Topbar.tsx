@@ -7,9 +7,13 @@ import MenuIcon from '@mui/icons-material/Menu';
 
 interface Props {
   onSidebarOpen: () => void;
+  handleOpenAuthDialog: () => void;
 }
 
-const Topbar = ({ onSidebarOpen }: Props): JSX.Element => {
+const Topbar = ({
+  onSidebarOpen,
+  handleOpenAuthDialog,
+}: Props): JSX.Element => {
   return (
     <Box
       display={'flex'}
@@ -81,6 +85,7 @@ const Topbar = ({ onSidebarOpen }: Props): JSX.Element => {
                 </g>
               </svg>
             }
+            onClick={handleOpenAuthDialog}
           >
             Sign in with Google
           </Button>

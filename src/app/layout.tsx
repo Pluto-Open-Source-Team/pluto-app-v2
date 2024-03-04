@@ -2,6 +2,7 @@
 
 import React from 'react';
 
+import { AuthProvider } from '@/contexts/auth-context';
 import Page from '@/components/Page';
 
 export default function RootLayout({
@@ -54,9 +55,15 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
           rel="stylesheet"
         />
+        <script
+          src="https://accounts.google.com/gsi/client"
+          async
+        />
       </head>
       <body>
-        <Page>{children}</Page>
+        <AuthProvider>
+          <Page>{children}</Page>
+        </AuthProvider>
       </body>
     </html>
   );

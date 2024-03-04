@@ -4,6 +4,7 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
+import Link from 'next/link';
 
 const logoStyle = {
   width: '230px',
@@ -47,7 +48,7 @@ const Topbar = (): JSX.Element => {
                 ml: '-18px',
                 px: 0,
               }}
-              component="a"
+              component={Link}
               href="/"
             >
               <img
@@ -66,7 +67,7 @@ const Topbar = (): JSX.Element => {
                 color="primary"
                 variant="contained"
                 size="small"
-                component="a"
+                component={Link}
                 href="/dashboard"
               >
                 Get Started

@@ -4,11 +4,12 @@ import Button from '@mui/material/Button';
 import { GoogleIcon } from '@/assets/svg-icons/GoogleIcon';
 import { useAuth } from '@/hooks/use-auth';
 import Chip from '@mui/material/Chip';
+import Link from 'next/link';
 
 const sideBarItems = [
   {
     title: 'Home',
-    href: '/',
+    href: '/dashboard',
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -135,7 +136,7 @@ const SidebarNav = ({ handleOpenAuthDialog }: Props): JSX.Element => {
           marginBottom={2}
         >
           <Button
-            component={'a'}
+            component={Link}
             href={item.href}
             fullWidth
             sx={{

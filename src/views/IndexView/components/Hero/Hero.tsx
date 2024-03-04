@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
-import Link from '@mui/material/Link';
+import Link from 'next/link';
 
 const Hero = (): JSX.Element => {
   return (
@@ -71,7 +71,7 @@ const Hero = (): JSX.Element => {
             <Button
               variant="contained"
               color="primary"
-              component="a"
+              component={Link}
               href="/dashboard"
             >
               Start now

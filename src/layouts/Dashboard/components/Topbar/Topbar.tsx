@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useAuth } from '@/hooks/use-auth';
 import { GoogleIcon } from '@/assets/svg-icons/GoogleIcon';
+import Link from 'next/link';
 
 interface Props {
   onSidebarOpen: () => void;
@@ -30,7 +31,7 @@ const Topbar = ({
         display={'flex'}
         alignItems={'center'}
         color={'primary.dark'}
-        component="a"
+        component={Link}
         href="/"
         sx={{
           textDecoration: 'none',

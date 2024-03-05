@@ -1,52 +1,41 @@
-import React from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
 import Dashboard from '@/layouts/Dashboard';
 import OrgUnitsTree from '@/views/DashboardView/components/OrgUnitsTree';
 import { useAuth } from '@/hooks/use-auth';
+import { directoryApi } from '@/api/directory-api';
+import { useMounted } from '@/hooks/use-mounted';
+import { makeOrgUnitsTreeData } from '@/utils/buildOrgChartTreeData';
 
 const DashboardView = (): JSX.Element => {
   const auth = useAuth();
+  const isMounted = useMounted();
 
-  const orgChart = {
-    name: 'Test Root',
-    children: [
-      {
-        name: 'Test 001',
-        attributes: {
-          users: '12',
-          devices: '22',
-        },
-        children: [
-          {
-            name: 'This is a long name test 002',
-            attributes: {
-              users: '12',
-              devices: '22',
-            },
-            children: [
-              {
-                name: 'Child 001',
-              },
-            ],
-          },
-          {
-            name: 'Test 003',
-            attributes: {
-              users: '12',
-              devices: '22',
-            },
-            children: [
-              {
-                name: 'Child 002',
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  };
+  const [orgUnits, setOrgUnits] = useState<OrgChartNodeProps>({ name: '' });
+
+  const getOrgUnits = useCallback(async () => {
+    try {
+      const orgUnitsResponse = await directoryApi.listOrganizationalUnits();
+
+      if (isMounted()) {
+        const formattedOrgUnitsData = makeOrgUnitsTreeData(
+          orgUnitsResponse.organizationUnits,
+        );
+
+        setOrgUnits(formattedOrgUnitsData);
+      }
+    } catch (err) {
+      if (isMounted()) {
+        setOrgUnits({ name: '' });
+      }
+    }
+  }, [isMounted]);
+
+  useEffect(() => {
+    getOrgUnits();
+  }, []);
 
   return (
     <Box sx={{ overflowX: 'hidden' }}>
@@ -70,7 +59,7 @@ const DashboardView = (): JSX.Element => {
               id="treeWrapper"
               style={{ width: '100em', height: '50em' }}
             >
-              <OrgUnitsTree data={orgChart} />
+              <OrgUnitsTree data={orgUnits} />
             </div>
           ) : (
             <Box

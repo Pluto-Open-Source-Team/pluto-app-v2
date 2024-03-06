@@ -103,7 +103,7 @@ const AuthDialog: FC<AuthDialogProps> = (props) => {
         const googleClient = google.accounts.oauth2.initTokenClient({
           client_id: clientId,
           scope:
-            'https://www.googleapis.com/auth/admin.directory.orgunit.readonly',
+            'https://www.googleapis.com/auth/admin.directory.orgunit.readonly email',
           prompt: 'consent',
           callback: handleGoogle,
           error_callback: handleGoogleError,

@@ -13,7 +13,10 @@ const DashboardView = (): JSX.Element => {
   const auth = useAuth();
   const isMounted = useMounted();
 
-  const [orgUnits, setOrgUnits] = useState<OrgChartNodeProps>({ name: '', orgUnitId: '' });
+  const [orgUnits, setOrgUnits] = useState<OrgChartNodeProps>({
+    name: '',
+    orgUnitId: '',
+  });
 
   const getOrgUnits = useCallback(async () => {
     try {

@@ -2,7 +2,6 @@
 
 import React from 'react';
 
-import { AuthProvider } from '@/contexts/auth-context';
 import Page from '@/components/Page';
 
 export default function RootLayout({
@@ -61,9 +60,7 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <AuthProvider>
-          <Page>{children}</Page>
-        </AuthProvider>
+        <Page>{children}</Page>
       </body>
     </html>
   );

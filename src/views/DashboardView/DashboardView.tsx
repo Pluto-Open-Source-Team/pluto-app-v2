@@ -13,7 +13,7 @@ const DashboardView = (): JSX.Element => {
   const auth = useAuth();
   const isMounted = useMounted();
 
-  const [orgUnits, setOrgUnits] = useState<OrgChartNodeProps>({ name: '' });
+  const [orgUnits, setOrgUnits] = useState<OrgChartNodeProps>({ name: '', orgUnitId: '' });
 
   const getOrgUnits = useCallback(async () => {
     try {
@@ -28,14 +28,14 @@ const DashboardView = (): JSX.Element => {
       }
     } catch (err) {
       if (isMounted()) {
-        setOrgUnits({ name: '' });
+        setOrgUnits({ orgUnitId: '', name: '' });
       }
     }
   }, [isMounted]);
 
   useEffect(() => {
     getOrgUnits();
-  }, []);
+  }, [auth.isAuthenticated]);
 
   return (
     <Box sx={{ overflowX: 'hidden' }}>

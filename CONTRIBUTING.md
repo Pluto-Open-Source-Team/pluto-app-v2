@@ -1,6 +1,6 @@
 # Welcome to the Pluto contributing guide
 
-Thank you for investing your time in contributing to our project! If you ever have any questions, feel free to contact us on [LinkedIn](https://www.linkedin.com/company/pluto-open-source-team/) or [discussions](https://github.com/Pluto-Open-Source-Team/pluto-app-v2/discussions).
+Thank you for investing your time in contributing to our project! If you ever have any questions, feel free to contact us on [pluto-open-source-team@googlegroups.com](mailto:pluto-open-source-team@googlegroups.com) or [LinkedIn](https://www.linkedin.com/company/pluto-open-source-team/) or [discussions](https://github.com/Pluto-Open-Source-Team/pluto-app-v2/discussions).
 
 You can contribute us by filing issues, bugs and PRs. You can also take a look at active issues and fix them. We love your input! We want to make contributing to this project as easy and transparent as possible, whether it's:
 

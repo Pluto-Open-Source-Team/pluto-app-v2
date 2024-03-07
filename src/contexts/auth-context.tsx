@@ -5,9 +5,7 @@ import { authApi } from '@/api/auth-api';
 interface State {
   isInitialized: boolean;
   isAuthenticated: boolean;
-  user: {
-    email: string;
-  } | null;
+  user: UserProps | null;
 }
 
 enum ActionType {
@@ -20,18 +18,14 @@ type InitializeAction = {
   type: ActionType.INITIALIZE;
   payload: {
     isAuthenticated: boolean;
-    user: {
-      email: string;
-    } | null;
+    user: UserProps | null;
   };
 };
 
 type LoginAction = {
   type: ActionType.LOGIN;
   payload: {
-    user: {
-      email: string;
-    };
+    user: UserProps;
   };
 };
 
@@ -103,7 +97,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
       const accessToken = globalThis.localStorage.getItem('ACCESS_TOKEN');
 
       if (accessToken) {
-        const user = await authApi.tokenInfo(accessToken);
+        const user = await authApi.userInfo(accessToken);
 
         dispatch({
           type: ActionType.INITIALIZE,
@@ -111,6 +105,8 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
             isAuthenticated: true,
             user: {
               email: user.email,
+              name: user.name,
+              picture: user.picture,
             },
           },
         });
@@ -140,7 +136,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
 
   const login = useCallback(
     async (accessToken: string): Promise<void> => {
-      const userResponse = await authApi.tokenInfo(accessToken);
+      const userResponse = await authApi.userInfo(accessToken);
 
       localStorage.setItem('ACCESS_TOKEN', accessToken);
 
@@ -149,6 +145,8 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
         payload: {
           user: {
             email: userResponse.email,
+            name: userResponse.name,
+            picture: userResponse.picture,
           },
         },
       });

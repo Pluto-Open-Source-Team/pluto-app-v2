@@ -67,6 +67,7 @@ const OrgUnitsTree = ({ data }: OrgUnitsTreeProps): JSX.Element => {
         data={data}
         translate={{ x: 100, y: translateY }}
         depthFactor={300}
+        initialDepth={1}
         renderCustomNodeElement={(rd3tProps) => (
           <PureSvgNodeElement
             nodeDatum={rd3tProps.nodeDatum}

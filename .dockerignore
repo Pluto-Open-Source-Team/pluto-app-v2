@@ -1,0 +1,14 @@
+.dockerignore
+node_modules
+npm-debug.log
+Dockerfile
+.git
+.gitignore
+.npmrc
+.env.example
+.editorconfig
+*.md
+.github/
+LICENSE
+.vscode/
+.idea/

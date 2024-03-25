@@ -30,5 +30,16 @@ To start a development server:
 npm run dev
 ```
 
+## Docker
+To test this on docker to these step:
+```bash
+DOCKER_BUILDKIT=1 docker build --pull --rm -f Dockerfile -t plutoappv2:your_tag . 
+```
+
+And finally run the container:
+```bash
+docker run --name given_container_name -p 3000:3000 -d image_id 
+```
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 

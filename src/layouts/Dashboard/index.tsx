@@ -5,7 +5,9 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { useTheme, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 
-import { Topbar, Sidebar, AuthDialog } from '@/layouts/Dashboard/components';
+import AuthDialog from '@/layouts/Dashboard/components/AuthDialog';
+import Topbar from '@/layouts/Dashboard/components/Topbar';
+import Sidebar from '@/layouts/Dashboard/components/Sidebar';
 
 interface Props {
   children: React.ReactNode;

@@ -1,6 +1,6 @@
 import React from 'react';
 import Drawer from '@mui/material/Drawer';
-import { SidebarNav } from './components';
+import SidebarNav from './SidebarNav';
 
 interface Props {
   onClose: () => void;

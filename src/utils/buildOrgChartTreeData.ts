@@ -7,9 +7,9 @@ function formatOrgChartNode(orgUnit: OrgUnitsProps): OrgChartNodeProps {
     name: orgUnit.name,
     orgUnitId: orgUnit.orgUnitId,
     attributes: {
-      users: '0',
-      devices: '0',
-      policies: '0',
+      users: '--',
+      devices: '--',
+      policies: '--',
     },
   };
 }
@@ -41,9 +41,9 @@ export const makeOrgUnitsTreeData = (
       name: rootNode.name,
       orgUnitId: rootNode.orgUnitId,
       attributes: {
-        users: '0',
-        devices: '0',
-        policies: '0',
+        users: '--',
+        devices: '--',
+        policies: '--',
       },
       children: buildOrgChartTree(data, rootNode.orgUnitId),
     };

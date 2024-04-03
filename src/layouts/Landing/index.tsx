@@ -3,7 +3,8 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 
-import { Topbar, Footer } from '@/layouts/Landing/components';
+import Footer from '@/layouts/Landing/components/Footer';
+import Topbar from '@/layouts/Landing/components/Topbar';
 
 interface Props {
   children: React.ReactNode;

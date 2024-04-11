@@ -1,0 +1,3 @@
+dispatch:
+  - url: "future.chromebook.cloud/*"
+    service: pluto-v2

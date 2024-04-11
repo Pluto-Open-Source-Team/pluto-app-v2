@@ -1,0 +1,8 @@
+env: standard
+runtime: nodejs20
+service: pluto-v2
+
+handlers:
+  - url: /.*
+    secure: always
+    script: auto

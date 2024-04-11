@@ -1,22 +1,48 @@
 import React, { useEffect, useCallback, useState } from 'react';
+import type { FC } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
 import Dashboard from '@/layouts/Dashboard';
 import OrgUnitsTree from '@/views/DashboardView/components/OrgUnitsTree';
+import OrgUnitDetailsDrawer from '@/views/DashboardView/components/OrgUnitDetailsDrawer';
 import { useAuth } from '@/hooks/use-auth';
 import { directoryApi } from '@/api/directory-api';
 import { useMounted } from '@/hooks/use-mounted';
 import { makeOrgUnitsTreeData } from '@/utils/buildOrgChartTreeData';
 
-const DashboardView = (): JSX.Element => {
+const DashboardView: FC = () => {
   const auth = useAuth();
   const isMounted = useMounted();
 
   const [orgUnits, setOrgUnits] = useState<OrgChartNodeProps>({
+    description: '',
+    orgUnitPath: '',
     name: '',
     orgUnitId: '',
   });
+  const [ouDetailsDrawerOpenStatus, setOuDetailsDrawerOpenStatus] =
+    useState<boolean>(false);
+  const [ouDetails, setOuDetails] = useState<OrgChartNodeProps>({
+    attributes: {
+      users: 'N/A',
+      devices: 'N/A',
+      policies: 'N/A',
+    },
+    name: 'N/A',
+    orgUnitId: 'N/A',
+    description: '',
+    orgUnitPath: '',
+  });
+
+  const closeOUDetailsDrawer = () => {
+    setOuDetailsDrawerOpenStatus(false);
+  };
+
+  const openOUDetailsDrawer = (ouDetails: OrgChartNodeProps) => {
+    setOuDetailsDrawerOpenStatus(true);
+    setOuDetails(ouDetails);
+  };
 
   const getOrgUnits = useCallback(async () => {
     try {
@@ -31,7 +57,12 @@ const DashboardView = (): JSX.Element => {
       }
     } catch (err) {
       if (isMounted()) {
-        setOrgUnits({ orgUnitId: '', name: '' });
+        setOrgUnits({
+          orgUnitId: '',
+          name: '',
+          description: '',
+          orgUnitPath: '',
+        });
       }
     }
   }, [isMounted]);
@@ -62,7 +93,10 @@ const DashboardView = (): JSX.Element => {
               id="treeWrapper"
               style={{ width: '100em', height: '50em' }}
             >
-              <OrgUnitsTree data={orgUnits} />
+              <OrgUnitsTree
+                data={orgUnits}
+                openOUDetailsDrawer={openOUDetailsDrawer}
+              />
             </div>
           ) : (
             <Box
@@ -94,6 +128,12 @@ const DashboardView = (): JSX.Element => {
           )}
         </Box>
       </Dashboard>
+
+      <OrgUnitDetailsDrawer
+        open={ouDetailsDrawerOpenStatus}
+        onClose={closeOUDetailsDrawer}
+        ouDetails={ouDetails}
+      />
     </Box>
   );
 };

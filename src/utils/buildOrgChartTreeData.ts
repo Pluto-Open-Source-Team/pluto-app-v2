@@ -6,6 +6,8 @@ function formatOrgChartNode(orgUnit: OrgUnitsProps): OrgChartNodeProps {
   return {
     name: orgUnit.name,
     orgUnitId: orgUnit.orgUnitId,
+    description: orgUnit.description,
+    orgUnitPath: orgUnit.orgUnitPath,
     attributes: {
       users: '--',
       devices: '--',
@@ -40,6 +42,8 @@ export const makeOrgUnitsTreeData = (
     return {
       name: rootNode.name,
       orgUnitId: rootNode.orgUnitId,
+      description: rootNode.description,
+      orgUnitPath: rootNode.orgUnitPath,
       attributes: {
         users: '--',
         devices: '--',
@@ -48,6 +52,6 @@ export const makeOrgUnitsTreeData = (
       children: buildOrgChartTree(data, rootNode.orgUnitId),
     };
   } else {
-    return { name: '', orgUnitId: '' };
+    return { description: '', orgUnitPath: '', name: '', orgUnitId: '' };
   }
 };

@@ -1,13 +1,17 @@
 import React, { useRef, useEffect, useState } from 'react';
+import type { FC } from 'react';
 import dynamic from 'next/dynamic';
 
 const DynamicTree = dynamic(() => import('react-d3-tree'), { ssr: false });
 
 interface OrgUnitsTreeProps {
   data: any;
+  openOUDetailsDrawer: (ouDetails: any) => any;
 }
 
-const OrgUnitsTree = ({ data }: OrgUnitsTreeProps): JSX.Element => {
+const OrgUnitsTree: FC<OrgUnitsTreeProps> = (props) => {
+  const { data, openOUDetailsDrawer } = props;
+
   const containerRef = useRef<HTMLDivElement>(null);
   const [translateY, setTranslateY] = useState<number>(0);
 
@@ -72,9 +76,7 @@ const OrgUnitsTree = ({ data }: OrgUnitsTreeProps): JSX.Element => {
           <PureSvgNodeElement
             nodeDatum={rd3tProps.nodeDatum}
             toggleNode={rd3tProps.toggleNode}
-            onNodeClick={() => {
-              console.log(rd3tProps.nodeDatum);
-            }}
+            onNodeClick={() => openOUDetailsDrawer(rd3tProps.nodeDatum)}
           />
         )}
       />

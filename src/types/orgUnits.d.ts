@@ -19,6 +19,8 @@ interface OrgUnitsResponseProps {
 interface OrgChartNodeProps {
   name: string;
   orgUnitId: string;
+  description: string;
+  orgUnitPath: string;
   attributes?: {
     users?: string;
     devices?: string;

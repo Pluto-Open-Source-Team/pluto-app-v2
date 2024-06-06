@@ -9,6 +9,9 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined';
 import UploadOutlinedIcon from '@mui/icons-material/UploadOutlined';
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
+import Box from '@mui/material/Box';
 
 interface OrgUnitDetailsDrawerProps {
   open: boolean;
@@ -30,18 +33,41 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
           maxWidth: 400,
         },
       }}
+      elevation={16}
     >
-      <Typography
+      <Box
         sx={{
-          mt: 4,
+          ml: 'auto',
+          mt: 1,
+          mr: 2,
+        }}
+      >
+        <IconButton
+          aria-label="close"
+          size="large"
+          onClick={onClose}
+        >
+          <CloseIcon fontSize="inherit" />
+        </IconButton>
+      </Box>
+      <Typography
+        variant="h5"
+        component="div"
+        sx={{
           mb: 2,
           ml: 3,
         }}
-        variant="h5"
-        component="div"
       >
         {ouDetails.name}
       </Typography>
+      <Stack
+        direction="row"
+        spacing={2}
+
+      >
+
+
+      </Stack>
       <List>
         <ListItem>
           <ListItemText

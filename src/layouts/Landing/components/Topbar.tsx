@@ -5,13 +5,15 @@ import Toolbar from '@mui/material/Toolbar';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Link from 'next/link';
-
-const logoStyle = {
-  width: '230px',
-  cursor: 'pointer',
-};
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 
 const Topbar = (): JSX.Element => {
+  const theme = useTheme();
+  const isMd = useMediaQuery(theme.breakpoints.up('md'), {
+    defaultMatches: true,
+  });
+
   return (
     <div>
       <AppBar
@@ -45,15 +47,22 @@ const Topbar = (): JSX.Element => {
                 flexGrow: 1,
                 display: 'flex',
                 alignItems: 'center',
-                ml: '-18px',
+                ml: isMd ? '-18px' : '-10px',
                 px: 0,
               }}
               component={Link}
               href="/"
             >
               <img
-                src="/assets/images/pluto-logo.svg"
-                style={logoStyle}
+                src={
+                  isMd
+                    ? '/assets/images/pluto-logo-long.png'
+                    : '/assets/images/pluto-logo.png'
+                }
+                style={{
+                  width: isMd ? '290px' : '50px',
+                  cursor: 'pointer',
+                }}
                 alt="Pluto Logo"
               />
             </Box>

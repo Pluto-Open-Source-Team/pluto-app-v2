@@ -93,7 +93,7 @@ const Topbar = ({
           component="img"
           sx={{ height: 40 }}
           alt="Pluto Logo"
-          src="/assets/images/pluto.png"
+          src="/assets/images/pluto-logo.png"
         />
         <Typography
           fontWeight={700}

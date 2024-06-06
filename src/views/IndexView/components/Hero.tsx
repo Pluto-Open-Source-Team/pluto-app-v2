@@ -84,10 +84,17 @@ const Hero = (): JSX.Element => {
           >
             By clicking &quot;Start now&quot; you agree to our&nbsp;
             <Link
-              href="#"
+              href={'/general/privacy-policy'}
               color="primary"
             >
-              Terms & Conditions
+              Privacy Policy
+            </Link>
+            &nbsp;and&nbsp;
+            <Link
+              href={'/general/terms-of-service'}
+              color="primary"
+            >
+              Terms of Service
             </Link>
             .
           </Typography>

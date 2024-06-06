@@ -60,14 +60,6 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
       >
         {ouDetails.name}
       </Typography>
-      <Stack
-        direction="row"
-        spacing={2}
-
-      >
-
-
-      </Stack>
       <List>
         <ListItem>
           <ListItemText

@@ -48,7 +48,7 @@ const Footer = (): JSX.Element => {
         <div>
           <Link
             color="text.secondary"
-            href="#"
+            href={'/general/privacy-policy'}
           >
             Privacy Policy
           </Link>
@@ -60,7 +60,7 @@ const Footer = (): JSX.Element => {
           </Typography>
           <Link
             color="text.secondary"
-            href="#"
+            href={'/general/terms-of-service'}
           >
             Terms of Service
           </Link>

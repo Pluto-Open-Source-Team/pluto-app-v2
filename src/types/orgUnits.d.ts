@@ -1,4 +1,4 @@
-interface OrgUnitsProps {
+export interface OrgUnitsProps {
   kind: string;
   name: string;
   description: string;
@@ -10,13 +10,13 @@ interface OrgUnitsProps {
   parentOrgUnitPath: string;
 }
 
-interface OrgUnitsResponseProps {
+export interface OrgUnitsResponseProps {
   kind: string;
   etag: string;
   organizationUnits: OrgUnitsProps[];
 }
 
-interface OrgChartNodeProps {
+export interface OrgChartNodeProps {
   name: string;
   orgUnitId: string;
   description: string;

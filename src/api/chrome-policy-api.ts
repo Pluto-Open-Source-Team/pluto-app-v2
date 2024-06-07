@@ -1,5 +1,9 @@
 import axios from 'axios';
 import { setupAxiosInterceptors } from '@/api/axiosConfig';
+import {
+  ResolvePoliciesRequestBody,
+  ResolvePoliciesResponseBody,
+} from '@/types/policy';
 
 class ChromePolicyApi {
   private axiosInstance = axios.create({

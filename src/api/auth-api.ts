@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { UserProps } from '@/types/user';
 
 class AuthApi {
   async userInfo(accessToken): Promise<UserProps> {

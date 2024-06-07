@@ -20,6 +20,8 @@ import { getNamespaces } from '@/utils/getNamespaces';
 import { delay } from '@/utils/delay';
 import { downloadJSON } from '@/utils/downloadJSON';
 import { getCurrentDateTime } from '@/utils/getCurrentDateTime';
+import { ResolvePoliciesResponseBody } from '@/types/policy';
+import { OrgChartNodeProps } from '@/types/orgUnits';
 
 interface OrgUnitDetailsDrawerProps {
   open: boolean;

@@ -10,6 +10,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { directoryApi } from '@/api/directory-api';
 import { useMounted } from '@/hooks/use-mounted';
 import { makeOrgUnitsTreeData } from '@/utils/buildOrgChartTreeData';
+import { OrgChartNodeProps } from '@/types/orgUnits';
 
 const DashboardView: FC = () => {
   const auth = useAuth();

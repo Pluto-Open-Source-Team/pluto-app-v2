@@ -1,6 +1,7 @@
 import { createContext, useEffect, useReducer, useCallback } from 'react';
 import type { FC, ReactNode } from 'react';
 import { authApi } from '@/api/auth-api';
+import { UserProps } from '@/types/user';
 
 interface State {
   isInitialized: boolean;

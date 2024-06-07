@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { setupAxiosInterceptors } from '@/api/axiosConfig';
+import { OrgUnitsResponseProps } from '@/types/orgUnits';
 
 class DirectoryApi {
   private axiosInstance = axios.create({

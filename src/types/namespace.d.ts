@@ -1,4 +1,4 @@
-interface NamespaceProps {
+export interface NamespaceProps {
   name: string;
   export: boolean;
   import: boolean;

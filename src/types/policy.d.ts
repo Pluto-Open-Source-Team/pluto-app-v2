@@ -1,4 +1,4 @@
-interface ResolvePoliciesRequestBody {
+export interface ResolvePoliciesRequestBody {
   policyTargetKey: {
     targetResource: string;
   };
@@ -6,7 +6,7 @@ interface ResolvePoliciesRequestBody {
   pageSize: number;
 }
 
-interface ResolvePoliciesResponseBody {
+export interface ResolvePoliciesResponseBody {
   resolvedPolicies: {
     targetKey: {
       targetResource: string;

@@ -1,3 +1,5 @@
+import { NamespaceProps } from '@/types/namespace';
+
 const namespacesData: NamespaceProps[] = [
   {
     name: 'chrome.users.*',

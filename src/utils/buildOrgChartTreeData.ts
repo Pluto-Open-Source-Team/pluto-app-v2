@@ -1,3 +1,5 @@
+import { OrgChartNodeProps, OrgUnitsProps } from '@/types/orgUnits';
+
 function findRootNode(data: OrgUnitsProps[]): OrgUnitsProps | undefined {
   return data.find((orgUnit) => orgUnit.orgUnitPath === '/');
 }

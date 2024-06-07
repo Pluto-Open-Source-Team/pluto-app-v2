@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import type { FC } from 'react';
 import Drawer from '@mui/material/Drawer';
 import Typography from '@mui/material/Typography';
@@ -12,6 +12,14 @@ import UploadOutlinedIcon from '@mui/icons-material/UploadOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
+import Alert from '@mui/material/Alert';
+import LinearProgress from '@mui/material/LinearProgress';
+import { chromePolicyApi } from '@/api/chrome-policy-api';
+import { refactoOrgUnitId } from '@/utils/refactoOrgUnitId';
+import { getNamespaces } from '@/utils/getNamespaces';
+import { delay } from '@/utils/delay';
+import { downloadJSON } from '@/utils/downloadJSON';
+import { getCurrentDateTime } from '@/utils/getCurrentDateTime';
 
 interface OrgUnitDetailsDrawerProps {
   open: boolean;
@@ -21,6 +29,68 @@ interface OrgUnitDetailsDrawerProps {
 
 const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
   const { onClose, open = false, ouDetails } = props;
+
+  const [exportingStatus, setExportingStatus] = useState<{
+    exporting: boolean;
+    namespace: string;
+    data: Record<string, ResolvePoliciesResponseBody>;
+  }>({
+    exporting: false,
+    namespace: '',
+    data: {},
+  });
+
+  const [exportCompleted, setExportCompleted] = useState<boolean>(false);
+
+  const resolvePolicies = useCallback(
+    async (namespace: string) => {
+      try {
+        const resolvedPoliciesResponse = await chromePolicyApi.resolvePolicies({
+          policyTargetKey: {
+            targetResource: refactoOrgUnitId(ouDetails.orgUnitId),
+          },
+          policySchemaFilter: namespace,
+          pageSize: 1000,
+        });
+
+        setExportingStatus((prevState) => ({
+          ...prevState,
+          exporting: true,
+          namespace,
+          data: {
+            ...prevState.data,
+            [namespace]: resolvedPoliciesResponse,
+          },
+        }));
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [ouDetails.orgUnitId],
+  );
+
+  const handleExportPolicies = useCallback(async () => {
+    setExportingStatus({ exporting: true, namespace: '', data: {} });
+    setExportCompleted(false);
+    const filteredNamespaces = getNamespaces().filter((ns) => ns.export);
+
+    for (const ns of filteredNamespaces) {
+      await resolvePolicies(ns.name);
+      await delay(1000);
+    }
+
+    setExportCompleted(true);
+  }, [resolvePolicies]);
+
+  useEffect(() => {
+    if (exportCompleted && exportingStatus.exporting) {
+      downloadJSON(
+        `resolved-policies-${getCurrentDateTime()}`,
+        exportingStatus.data,
+      );
+      setExportingStatus({ exporting: false, namespace: '', data: {} });
+    }
+  }, [exportingStatus, exportCompleted]);
 
   return (
     <Drawer
@@ -140,16 +210,64 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
         <Button
           startIcon={<UploadOutlinedIcon />}
           variant="outlined"
+          disabled={exportingStatus.exporting}
         >
           Import
         </Button>
         <Button
           startIcon={<DownloadOutlinedIcon />}
           variant="outlined"
+          onClick={handleExportPolicies}
+          disabled={exportingStatus.exporting}
         >
           Export
         </Button>
       </Stack>
+      <Box
+        sx={{
+          mt: 4,
+          ml: 2,
+          mr: 2,
+        }}
+      >
+        {exportingStatus.exporting && (
+          <Stack spacing={1}>
+            <LinearProgress
+              sx={{
+                mb: 2,
+              }}
+            />
+            <Typography
+              sx={{
+                textAlign: 'center',
+                mb: 2,
+              }}
+              variant="h6"
+            >
+              Exporting policies...
+            </Typography>
+            <Typography
+              sx={{
+                textAlign: 'left',
+                mb: 1,
+              }}
+              variant="subtitle2"
+            >
+              <strong>Namespace: </strong>
+              {exportingStatus.namespace}
+            </Typography>
+          </Stack>
+        )}
+        {exportCompleted && (
+          <Alert
+            variant="outlined"
+            severity="success"
+          >
+            Export completed successfully! The file will be downloaded to your
+            computer shortly.
+          </Alert>
+        )}
+      </Box>
     </Drawer>
   );
 };

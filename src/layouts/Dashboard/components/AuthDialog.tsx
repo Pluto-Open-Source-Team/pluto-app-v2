@@ -20,6 +20,7 @@ import {
 } from '@mui/material';
 import { GoogleIcon } from '@/assets/svg-icons/GoogleIcon';
 import { useAuth } from '@/hooks/use-auth';
+import { googleSettings } from '@/config';
 
 const TipRoot = styled('div')(({ theme }) => ({
   backgroundColor: '#F3F4F6',
@@ -102,8 +103,7 @@ const AuthDialog: FC<AuthDialogProps> = (props) => {
         clearInterval(interval);
         const googleClient = google.accounts.oauth2.initTokenClient({
           client_id: clientId,
-          scope:
-            'https://www.googleapis.com/auth/admin.directory.orgunit.readonly email profile',
+          scope: googleSettings.scope,
           callback: handleGoogle,
           error_callback: handleGoogleError,
         });

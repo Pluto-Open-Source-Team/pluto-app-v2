@@ -10,89 +10,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-
-const namespacesData = [
-  {
-    name: 'chrome.users.*',
-    export: true,
-    import: false,
-  },
-  {
-    name: 'chrome.users.apps.*',
-    export: true,
-    import: false,
-  },
-  {
-    name: 'chrome.users.appsconfig.*',
-    export: true,
-    import: false,
-  },
-  {
-    name: 'chrome.devices.*',
-    export: true,
-    import: false,
-  },
-  {
-    name: 'chrome.devices.managedguest.*',
-    export: true,
-    import: false,
-  },
-  {
-    name: 'chrome.devices.managedguest.apps.*',
-    export: true,
-    import: false,
-  },
-  {
-    name: 'chrome.devices.kiosk.*',
-    export: true,
-    import: false,
-  },
-  {
-    name: 'chrome.devices.kiosk.apps.*',
-    export: true,
-    import: false,
-  },
-  {
-    name: 'chrome.devices.kiosk.appsconfig.*',
-    export: true,
-    import: false,
-  },
-  {
-    name: 'chrome.printers.*',
-    export: true,
-    import: false,
-  },
-  {
-    name: 'chrome.printservers.*',
-    export: true,
-    import: false,
-  },
-  {
-    name: 'chrome.networks.globalsettings.*',
-    export: true,
-    import: false,
-  },
-  {
-    name: 'chrome.networks.wifi.*',
-    export: true,
-    import: false,
-  },
-  {
-    name: 'chrome.networks.ethernet.*',
-    export: true,
-    import: false,
-  },
-  {
-    name: 'chrome.networks.vpn.*',
-    export: true,
-    import: false,
-  },
-  {
-    name: 'chrome.networks.certificates.*',
-    export: true,
-    import: false,
-  },
-];
+import { getNamespaces } from '@/utils/getNamespaces';
 
 const Namespaces = (): JSX.Element => {
   return (
@@ -173,7 +91,7 @@ const Namespaces = (): JSX.Element => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {namespacesData.map((namespace) => (
+              {getNamespaces().map((namespace) => (
                 <TableRow key={namespace.name}>
                   <TableCell
                     component="th"

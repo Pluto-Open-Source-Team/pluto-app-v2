@@ -134,6 +134,7 @@ const DashboardView: FC = () => {
         open={ouDetailsDrawerOpenStatus}
         onClose={closeOUDetailsDrawer}
         ouDetails={ouDetails}
+        uniqueKey={ouDetails.orgUnitId}
       />
     </Box>
   );

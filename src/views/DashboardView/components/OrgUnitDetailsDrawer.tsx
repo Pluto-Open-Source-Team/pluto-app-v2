@@ -27,22 +27,34 @@ interface OrgUnitDetailsDrawerProps {
   open: boolean;
   onClose: () => void;
   ouDetails: OrgChartNodeProps;
+  uniqueKey: string;
 }
 
 const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
-  const { onClose, open = false, ouDetails } = props;
+  const { onClose, open = false, ouDetails, uniqueKey } = props;
 
-  const [exportingStatus, setExportingStatus] = useState<{
-    exporting: boolean;
-    namespace: string;
-    data: Record<string, ResolvePoliciesResponseBody>;
-  }>({
-    exporting: false,
-    namespace: '',
-    data: {},
+  const [exportingStatus, setExportingStatus] = useState<
+    Record<
+      string,
+      {
+        exporting: boolean;
+        namespace: string;
+        data: Record<string, ResolvePoliciesResponseBody>;
+      }
+    >
+  >({
+    [uniqueKey]: {
+      exporting: false,
+      namespace: '',
+      data: {},
+    },
   });
 
-  const [exportCompleted, setExportCompleted] = useState<boolean>(false);
+  const [exportCompleted, setExportCompleted] = useState<
+    Record<string, boolean>
+  >({
+    [uniqueKey]: false,
+  });
 
   const resolvePolicies = useCallback(
     async (namespace: string) => {
@@ -57,23 +69,36 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
 
         setExportingStatus((prevState) => ({
           ...prevState,
-          exporting: true,
-          namespace,
-          data: {
-            ...prevState.data,
-            [namespace]: resolvedPoliciesResponse,
+          [uniqueKey]: {
+            ...prevState[uniqueKey],
+            exporting: true,
+            namespace,
+            data: {
+              ...prevState[uniqueKey].data,
+              [namespace]: resolvedPoliciesResponse,
+            },
           },
         }));
       } catch (err) {
         console.log(err);
       }
     },
-    [ouDetails.orgUnitId],
+    [ouDetails.orgUnitId, uniqueKey],
   );
 
   const handleExportPolicies = useCallback(async () => {
-    setExportingStatus({ exporting: true, namespace: '', data: {} });
-    setExportCompleted(false);
+    setExportingStatus((prevState) => ({
+      ...prevState,
+      [uniqueKey]: {
+        exporting: true,
+        namespace: '',
+        data: {},
+      },
+    }));
+    setExportCompleted((prevState) => ({
+      ...prevState,
+      [uniqueKey]: false,
+    }));
     const filteredNamespaces = getNamespaces().filter((ns) => ns.export);
 
     for (const ns of filteredNamespaces) {
@@ -81,18 +106,28 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
       await delay(1000);
     }
 
-    setExportCompleted(true);
-  }, [resolvePolicies]);
+    setExportCompleted((prevState) => ({
+      ...prevState,
+      [uniqueKey]: true,
+    }));
+  }, [resolvePolicies, uniqueKey]);
 
   useEffect(() => {
-    if (exportCompleted && exportingStatus.exporting) {
+    if (exportCompleted[uniqueKey] && exportingStatus[uniqueKey]?.exporting) {
       downloadJSON(
-        `resolved-policies-${getCurrentDateTime()}`,
-        exportingStatus.data,
+        `${uniqueKey}-resolved-policies-${getCurrentDateTime()}`,
+        exportingStatus[uniqueKey].data,
       );
-      setExportingStatus({ exporting: false, namespace: '', data: {} });
+      setExportingStatus((prevState) => ({
+        ...prevState,
+        [uniqueKey]: {
+          exporting: false,
+          namespace: '',
+          data: {},
+        },
+      }));
     }
-  }, [exportingStatus, exportCompleted]);
+  }, [exportingStatus, exportCompleted, uniqueKey]);
 
   return (
     <Drawer
@@ -212,7 +247,7 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
         <Button
           startIcon={<UploadOutlinedIcon />}
           variant="outlined"
-          disabled={exportingStatus.exporting}
+          disabled={exportingStatus[uniqueKey]?.exporting}
         >
           Import
         </Button>
@@ -220,7 +255,7 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
           startIcon={<DownloadOutlinedIcon />}
           variant="outlined"
           onClick={handleExportPolicies}
-          disabled={exportingStatus.exporting}
+          disabled={exportingStatus[uniqueKey]?.exporting}
         >
           Export
         </Button>
@@ -232,7 +267,7 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
           mr: 2,
         }}
       >
-        {exportingStatus.exporting && (
+        {exportingStatus[uniqueKey]?.exporting && (
           <Stack spacing={1}>
             <LinearProgress
               sx={{
@@ -256,17 +291,17 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
               variant="subtitle2"
             >
               <strong>Namespace: </strong>
-              {exportingStatus.namespace}
+              {exportingStatus[uniqueKey].namespace}
             </Typography>
           </Stack>
         )}
-        {exportCompleted && (
+        {exportCompleted[uniqueKey] && (
           <Alert
             variant="outlined"
             severity="success"
           >
-            Export completed successfully! The file will be downloaded to your
-            computer shortly.
+            {uniqueKey}: Export completed successfully! The file will be
+            downloaded to your computer shortly.
           </Alert>
         )}
       </Box>

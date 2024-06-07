@@ -20,7 +20,7 @@ import {
 } from '@mui/material';
 import { GoogleIcon } from '@/assets/svg-icons/GoogleIcon';
 import { useAuth } from '@/hooks/use-auth';
-import { googleSettings } from '@/config';
+import { appSettings, googleSettings } from '@/config';
 
 const TipRoot = styled('div')(({ theme }) => ({
   backgroundColor: '#F3F4F6',
@@ -51,7 +51,7 @@ const AuthDialog: FC<AuthDialogProps> = (props) => {
   });
 
   const initialValues = {
-    clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '',
+    clientId: appSettings.googleClientId || '',
   };
 
   const validationSchema = yup.object({

@@ -15,21 +15,25 @@ const sideBarItems = [
     title: 'Home',
     href: '/dashboard',
     icon: <DashboardIcon />,
+    target: '',
   },
   {
     title: 'Contribute',
-    href: '/',
+    href: 'https://github.com/Pluto-Open-Source-Team/pluto-app-v2',
     icon: <GithubIcon />,
+    target: '_blank',
   },
   {
     title: 'Share',
     href: '/',
     icon: <ShareIcon />,
+    target: '',
   },
   {
     title: 'Settings',
     href: '/',
     icon: <SettingsIcon />,
+    target: '',
   },
 ];
 
@@ -50,6 +54,7 @@ const SidebarNav = ({ handleOpenAuthDialog }: Props): JSX.Element => {
           <Button
             component={Link}
             href={item.href}
+            target={item.target}
             fullWidth
             sx={{
               justifyContent: 'flex-start',

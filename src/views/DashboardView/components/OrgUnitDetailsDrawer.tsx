@@ -356,7 +356,7 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
         <Button
           startIcon={<UploadOutlinedIcon />}
           variant="outlined"
-          disabled={exportingStatus[uniqueKey]?.exporting}
+          disabled
         >
           Import
         </Button>

@@ -10,6 +10,7 @@ import Stack from '@mui/material/Stack';
 import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined';
 import UploadOutlinedIcon from '@mui/icons-material/UploadOutlined';
 import CloseIcon from '@mui/icons-material/Close';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
@@ -24,6 +25,8 @@ import { PolicyTableProps } from '@/types/policy';
 import { OrgChartNodeProps } from '@/types/orgUnits';
 import { useStore } from '@/hooks/use-store';
 import { v4 as uuidv4 } from 'uuid';
+import Tooltip from '@mui/material/Tooltip';
+import ConfirmationDialog from '@/components/ConfirmationDialog';
 
 interface OrgUnitDetailsDrawerProps {
   open: boolean;
@@ -35,7 +38,11 @@ interface OrgUnitDetailsDrawerProps {
 const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
   const { onClose, open = false, ouDetails, uniqueKey } = props;
 
-  const { bulkPutPolicies, useLivePoliciesByOrgUnitId } = useStore();
+  const {
+    bulkPutPolicies,
+    useLivePoliciesByOrgUnitId,
+    deleteAllPoliciesByOrgUnitId,
+  } = useStore();
   const liveStoredPolicies =
     useLivePoliciesByOrgUnitId(ouDetails.orgUnitId) || [];
 
@@ -61,6 +68,25 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
   >({
     [uniqueKey]: false,
   });
+
+  const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
+
+  const handleOpenDeleteModal = () => {
+    setOpenDeleteModal(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setOpenDeleteModal(false);
+  };
+
+  const invalidateCache = useCallback(async () => {
+    try {
+      await deleteAllPoliciesByOrgUnitId(ouDetails.orgUnitId);
+      handleCloseDeleteModal();
+    } catch (err) {
+      console.log(err);
+    }
+  }, [ouDetails.orgUnitId]);
 
   const resolvePolicies = useCallback(
     async (namespace: string) => {
@@ -275,7 +301,23 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
             }
           />
         </ListItem>
-        <ListItem>
+        <ListItem
+          secondaryAction={
+            policiesCachedTimestamp && (
+              <Tooltip title="Clear cached data">
+                <IconButton
+                  edge="end"
+                  aria-label="delete"
+                  color="error"
+                  size="large"
+                  onClick={handleOpenDeleteModal}
+                >
+                  <DeleteForeverIcon />
+                </IconButton>
+              </Tooltip>
+            )
+          }
+        >
           <ListItemText
             primary={
               <Typography variant="body1">
@@ -371,6 +413,17 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
           </Alert>
         )}
       </Box>
+
+      {openDeleteModal && (
+        <ConfirmationDialog
+          key={ouDetails.orgUnitId}
+          title="Clear Cache"
+          message={`This will clear "${ouDetails.name}" cached data.`}
+          open={openDeleteModal}
+          onClose={handleCloseDeleteModal}
+          confirmAction={invalidateCache}
+        />
+      )}
     </Drawer>
   );
 };

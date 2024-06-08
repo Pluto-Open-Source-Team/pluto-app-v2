@@ -21,9 +21,14 @@ export const useStore = () => {
     );
   };
 
+  const deleteAllPoliciesByOrgUnitId = async (orgUnitId: string) => {
+    await db.policies.where('orgUnitId').equals(orgUnitId).delete();
+  };
+
   return {
     bulkPutPolicies,
     useLivePoliciesByOrgUnitId,
     useLivePoliciesCountByOrgUnitId,
+    deleteAllPoliciesByOrgUnitId,
   };
 };

@@ -20,8 +20,10 @@ import { getNamespaces } from '@/utils/getNamespaces';
 import { delay } from '@/utils/delay';
 import { downloadJSON } from '@/utils/downloadJSON';
 import { getCurrentDateTime } from '@/utils/getCurrentDateTime';
-import { ResolvePoliciesResponseBody } from '@/types/policy';
+import { PolicyTableProps } from '@/types/policy';
 import { OrgChartNodeProps } from '@/types/orgUnits';
+import { useStore } from '@/hooks/use-store';
+import { v4 as uuidv4 } from 'uuid';
 
 interface OrgUnitDetailsDrawerProps {
   open: boolean;
@@ -33,13 +35,16 @@ interface OrgUnitDetailsDrawerProps {
 const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
   const { onClose, open = false, ouDetails, uniqueKey } = props;
 
+  const { bulkPutPolicies, useLivePoliciesByOrgUnitId } = useStore();
+  const liveStoredPolicies = useLivePoliciesByOrgUnitId(ouDetails.orgUnitId) || [];
+
   const [exportingStatus, setExportingStatus] = useState<
     Record<
       string,
       {
         exporting: boolean;
         namespace: string;
-        data: Record<string, ResolvePoliciesResponseBody>;
+        data: Record<string, PolicyTableProps[]>;
       }
     >
   >({
@@ -67,18 +72,34 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
           pageSize: 1000,
         });
 
-        setExportingStatus((prevState) => ({
-          ...prevState,
-          [uniqueKey]: {
-            ...prevState[uniqueKey],
-            exporting: true,
-            namespace,
-            data: {
-              ...prevState[uniqueKey].data,
-              [namespace]: resolvedPoliciesResponse,
+        if (
+          resolvedPoliciesResponse &&
+          resolvedPoliciesResponse.resolvedPolicies
+        ) {
+          const formattedPolicies =
+            resolvedPoliciesResponse.resolvedPolicies.map((_policy) => ({
+              ..._policy,
+              orgUnitId: ouDetails.orgUnitId,
+              id: uuidv4(),
+              namespace,
+              cachedAt: getCurrentDateTime(),
+            }));
+
+          await bulkPutPolicies(formattedPolicies);
+
+          setExportingStatus((prevState) => ({
+            ...prevState,
+            [uniqueKey]: {
+              ...prevState[uniqueKey],
+              exporting: true,
+              namespace,
+              data: {
+                ...prevState[uniqueKey].data,
+                [namespace]: formattedPolicies,
+              },
             },
-          },
-        }));
+          }));
+        }
       } catch (err) {
         console.log(err);
       }
@@ -99,18 +120,40 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
       ...prevState,
       [uniqueKey]: false,
     }));
-    const filteredNamespaces = getNamespaces().filter((ns) => ns.export);
 
-    for (const ns of filteredNamespaces) {
-      await resolvePolicies(ns.name);
-      await delay(1000);
+    if (liveStoredPolicies && liveStoredPolicies.length > 0) {
+      const groupedPolicies = liveStoredPolicies.reduce((acc, policy) => {
+        (acc[policy.namespace] = acc[policy.namespace] || []).push(policy);
+        return acc;
+      }, {});
+
+      setExportingStatus((prevState) => ({
+        ...prevState,
+        [uniqueKey]: {
+          ...prevState[uniqueKey],
+          exporting: true,
+          namespace: 'All',
+          data: groupedPolicies,
+        },
+      }));
+      setExportCompleted((prevState) => ({
+        ...prevState,
+        [uniqueKey]: true,
+      }));
+    } else {
+      const filteredNamespaces = getNamespaces().filter((ns) => ns.export);
+
+      for (const ns of filteredNamespaces) {
+        await resolvePolicies(ns.name);
+        await delay(1000);
+      }
+
+      setExportCompleted((prevState) => ({
+        ...prevState,
+        [uniqueKey]: true,
+      }));
     }
-
-    setExportCompleted((prevState) => ({
-      ...prevState,
-      [uniqueKey]: true,
-    }));
-  }, [resolvePolicies, uniqueKey]);
+  }, [resolvePolicies, uniqueKey, liveStoredPolicies]);
 
   useEffect(() => {
     if (exportCompleted[uniqueKey] && exportingStatus[uniqueKey]?.exporting) {
@@ -128,6 +171,9 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
       }));
     }
   }, [exportingStatus, exportCompleted, uniqueKey]);
+
+  const policiesCachedTimestamp =
+    liveStoredPolicies.length > 0 ? liveStoredPolicies[0].cachedAt : null;
 
   return (
     <Drawer
@@ -228,6 +274,26 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
             }
           />
         </ListItem>
+        <ListItem>
+          <ListItemText
+            primary={
+              <Typography variant="body1">
+                {policiesCachedTimestamp || 'N/A'}
+              </Typography>
+            }
+            secondary={
+              <Typography
+                sx={{
+                  color: 'rgba(0, 0, 0, 0.6)',
+                  fontSize: '0.76rem',
+                }}
+                variant="caption"
+              >
+                Cached Data At
+              </Typography>
+            }
+          />
+        </ListItem>
       </List>
 
       <Typography
@@ -281,7 +347,7 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
               }}
               variant="h6"
             >
-              Exporting policies...
+              Exporting policies for {ouDetails.name}...
             </Typography>
             <Typography
               sx={{
@@ -300,8 +366,8 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
             variant="outlined"
             severity="success"
           >
-            {uniqueKey}: Export completed successfully! The file will be
-            downloaded to your computer shortly.
+            Export completed successfully! The file will be
+            downloaded shortly.
           </Alert>
         )}
       </Box>

@@ -1,3 +1,23 @@
+export interface PolicyProps {
+  targetKey: {
+    targetResource: string;
+  };
+  value: {
+    policySchema: string;
+    value: any;
+  };
+  sourceKey: {
+    targetResource: string;
+  };
+}
+
+export interface PolicyTableProps extends PolicyProps {
+  id?: string;
+  orgUnitId: string;
+  namespace: string;
+  cachedAt: string;
+}
+
 export interface ResolvePoliciesRequestBody {
   policyTargetKey: {
     targetResource: string;
@@ -7,17 +27,6 @@ export interface ResolvePoliciesRequestBody {
 }
 
 export interface ResolvePoliciesResponseBody {
-  resolvedPolicies: {
-    targetKey: {
-      targetResource: string;
-    };
-    value: {
-      policySchema: string;
-      value: any;
-    };
-    sourceKey: {
-      targetResource: string;
-    };
-  }[];
+  resolvedPolicies: PolicyProps[];
   nextPageToken: string;
 }

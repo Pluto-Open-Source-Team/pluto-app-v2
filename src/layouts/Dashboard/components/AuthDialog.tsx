@@ -211,7 +211,7 @@ const AuthDialog: FC<AuthDialogProps> = (props) => {
           >
             <Button
               variant="outlined"
-              sx={{ display: { xs: 'none', md: 'flex' } }}
+              sx={{ display: { xs: 'flex', md: 'flex' } }}
               startIcon={<GoogleIcon />}
               type="submit"
               disabled={connectingWithGoogle}

@@ -15,6 +15,8 @@ import { GoogleIcon } from '@/assets/svg-icons/GoogleIcon';
 import Link from 'next/link';
 import Badge from '@mui/material/Badge';
 import { styled } from '@mui/material/styles';
+import useCacheSettings from '@/hooks/use-cache-settings';
+import { useStore } from '@/hooks/use-store';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -55,6 +57,9 @@ const Topbar = ({
   handleOpenAuthDialog,
 }: Props): JSX.Element => {
   const auth = useAuth();
+  const [cacheSettings] = useCacheSettings();
+
+  const { deleteAllRecords } = useStore();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openEmailMenu = Boolean(anchorEl);
@@ -69,6 +74,11 @@ const Topbar = ({
 
   const handleLogoutUser = async () => {
     setAnchorEl(null);
+
+    if (cacheSettings.clearDataOnSignOut) {
+      await deleteAllRecords();
+    }
+
     await auth.logout();
   };
 

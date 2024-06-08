@@ -27,6 +27,7 @@ import { useStore } from '@/hooks/use-store';
 import { v4 as uuidv4 } from 'uuid';
 import Tooltip from '@mui/material/Tooltip';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
+import useCacheSettings from '@/hooks/use-cache-settings';
 
 interface OrgUnitDetailsDrawerProps {
   open: boolean;
@@ -37,6 +38,8 @@ interface OrgUnitDetailsDrawerProps {
 
 const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
   const { onClose, open = false, ouDetails, uniqueKey } = props;
+
+  const [cacheSettings] = useCacheSettings();
 
   const {
     bulkPutPolicies,
@@ -112,7 +115,9 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
               cachedAt: getCurrentDateTime(),
             }));
 
-          await bulkPutPolicies(formattedPolicies);
+          if (cacheSettings.enableCaching) {
+            await bulkPutPolicies(formattedPolicies);
+          }
 
           setExportingStatus((prevState) => ({
             ...prevState,

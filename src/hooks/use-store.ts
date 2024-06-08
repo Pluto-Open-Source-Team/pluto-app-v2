@@ -25,10 +25,15 @@ export const useStore = () => {
     await db.policies.where('orgUnitId').equals(orgUnitId).delete();
   };
 
+  const deleteAllRecords = async () => {
+    await db.delete({ disableAutoOpen: false });
+  };
+
   return {
     bulkPutPolicies,
     useLivePoliciesByOrgUnitId,
     useLivePoliciesCountByOrgUnitId,
     deleteAllPoliciesByOrgUnitId,
+    deleteAllRecords,
   };
 };

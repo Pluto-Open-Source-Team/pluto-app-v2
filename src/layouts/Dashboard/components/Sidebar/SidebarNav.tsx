@@ -31,7 +31,7 @@ const sideBarItems = [
   },
   {
     title: 'Settings',
-    href: '/',
+    href: '/dashboard/settings',
     icon: <SettingsIcon />,
     target: '',
   },

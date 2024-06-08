@@ -36,7 +36,8 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
   const { onClose, open = false, ouDetails, uniqueKey } = props;
 
   const { bulkPutPolicies, useLivePoliciesByOrgUnitId } = useStore();
-  const liveStoredPolicies = useLivePoliciesByOrgUnitId(ouDetails.orgUnitId) || [];
+  const liveStoredPolicies =
+    useLivePoliciesByOrgUnitId(ouDetails.orgUnitId) || [];
 
   const [exportingStatus, setExportingStatus] = useState<
     Record<
@@ -50,7 +51,7 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
   >({
     [uniqueKey]: {
       exporting: false,
-      namespace: '',
+      namespace: '...',
       data: {},
     },
   });
@@ -112,7 +113,7 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
       ...prevState,
       [uniqueKey]: {
         exporting: true,
-        namespace: '',
+        namespace: '...',
         data: {},
       },
     }));
@@ -366,8 +367,7 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
             variant="outlined"
             severity="success"
           >
-            Export completed successfully! The file will be
-            downloaded shortly.
+            Export completed successfully! The file will be downloaded shortly.
           </Alert>
         )}
       </Box>

@@ -14,8 +14,16 @@ export const useStore = () => {
     );
   };
 
+  const useLivePoliciesCountByOrgUnitId = (orgUnitId: string) => {
+    return useLiveQuery(
+      () => db.policies.where('orgUnitId').equals(orgUnitId).count(),
+      [orgUnitId],
+    );
+  };
+
   return {
     bulkPutPolicies,
     useLivePoliciesByOrgUnitId,
+    useLivePoliciesCountByOrgUnitId,
   };
 };

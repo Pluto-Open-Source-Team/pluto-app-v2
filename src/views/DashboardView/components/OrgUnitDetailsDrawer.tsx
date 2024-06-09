@@ -16,6 +16,7 @@ import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import { chromePolicyApi } from '@/api/chrome-policy-api';
+import { directoryApi } from '@/api/directory-api';
 import { refactoOrgUnitId } from '@/utils/refactoOrgUnitId';
 import { getNamespaces } from '@/utils/getNamespaces';
 import { delay } from '@/utils/delay';
@@ -28,6 +29,9 @@ import { v4 as uuidv4 } from 'uuid';
 import Tooltip from '@mui/material/Tooltip';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
 import useCacheSettings from '@/hooks/use-cache-settings';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import { chromeOsDevicesTableProps } from '@/types/chromeOsDevices';
+import { keyframes } from '@emotion/react';
 
 interface OrgUnitDetailsDrawerProps {
   open: boolean;
@@ -45,9 +49,22 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
     bulkPutPolicies,
     useLivePoliciesByOrgUnitId,
     deleteAllPoliciesByOrgUnitId,
+    useLivePoliciesCountByOrgUnitId,
+    bulkPutDevices,
+    useLiveDevicesCountByOrgUnitId,
   } = useStore();
+
   const liveStoredPolicies =
     useLivePoliciesByOrgUnitId(ouDetails.orgUnitId) || [];
+
+  const rotate = keyframes`
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  `;
 
   const [exportingStatus, setExportingStatus] = useState<
     Record<
@@ -63,6 +80,21 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
       exporting: false,
       namespace: '...',
       data: {},
+    },
+  });
+
+  const [devicesUsersStatus, setDevicesUsersStatus] = useState<
+    Record<
+      string,
+      {
+        loading: boolean;
+        devicesData: chromeOsDevicesTableProps[];
+      }
+    >
+  >({
+    [uniqueKey]: {
+      loading: false,
+      devicesData: [],
     },
   });
 
@@ -187,6 +219,63 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
     }
   }, [resolvePolicies, uniqueKey, liveStoredPolicies]);
 
+  const handleGetDevicesCount = useCallback(async () => {
+    try {
+      setDevicesUsersStatus((prevState) => ({
+        ...prevState,
+        [uniqueKey]: {
+          loading: true,
+          devicesData: [],
+        },
+      }));
+      const listDevicesResponse =
+        await directoryApi.listChromeOsDevicesByOrgUnitId(ouDetails.orgUnitId);
+
+      if (listDevicesResponse && listDevicesResponse.chromeosdevices) {
+        const formattedDevices = listDevicesResponse.chromeosdevices.map(
+          (_device) => ({
+            kind: _device.kind,
+            deviceId: _device.deviceId,
+            id: uuidv4(),
+            orgUnitId: uniqueKey,
+            cachedAt: getCurrentDateTime(),
+          }),
+        );
+
+        if (cacheSettings.enableCaching) {
+          await bulkPutDevices(formattedDevices);
+        }
+
+        setDevicesUsersStatus((prevState) => ({
+          ...prevState,
+          [uniqueKey]: {
+            ...prevState[uniqueKey],
+            loading: false,
+            devicesData: formattedDevices,
+          },
+        }));
+      } else {
+        setDevicesUsersStatus((prevState) => ({
+          ...prevState,
+          [uniqueKey]: {
+            ...prevState[uniqueKey],
+            loading: false,
+            devicesData: [],
+          },
+        }));
+      }
+    } catch (err) {
+      setDevicesUsersStatus((prevState) => ({
+        ...prevState,
+        [uniqueKey]: {
+          ...prevState[uniqueKey],
+          loading: false,
+          devicesData: [],
+        },
+      }));
+    }
+  }, [ouDetails.orgUnitId]);
+
   useEffect(() => {
     if (exportCompleted[uniqueKey] && exportingStatus[uniqueKey]?.exporting) {
       downloadJSON(
@@ -308,6 +397,67 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
         </ListItem>
         <ListItem
           secondaryAction={
+            <Tooltip title="Refresh devices count">
+              <IconButton
+                edge="end"
+                aria-label="refresh"
+                color="primary"
+                size="large"
+                onClick={handleGetDevicesCount}
+                disabled={devicesUsersStatus[uniqueKey]?.loading}
+              >
+                <RefreshIcon
+                  sx={{
+                    animation: devicesUsersStatus[uniqueKey]?.loading
+                      ? `${rotate} 0.5s linear infinite`
+                      : '',
+                  }}
+                />
+              </IconButton>
+            </Tooltip>
+          }
+        >
+          <ListItemText
+            primary={
+              <Typography variant="body1">
+                {useLiveDevicesCountByOrgUnitId(ouDetails.orgUnitId) || '--'}
+              </Typography>
+            }
+            secondary={
+              <Typography
+                sx={{
+                  color: 'rgba(0, 0, 0, 0.6)',
+                  fontSize: '0.76rem',
+                }}
+                variant="caption"
+              >
+                Devices
+              </Typography>
+            }
+          />
+        </ListItem>
+        <ListItem>
+          <ListItemText
+            primary={
+              <Typography variant="body1">
+                {useLivePoliciesCountByOrgUnitId(ouDetails.orgUnitId) || '--'}
+              </Typography>
+            }
+            secondary={
+              <Typography
+                sx={{
+                  color: 'rgba(0, 0, 0, 0.6)',
+                  fontSize: '0.76rem',
+                }}
+                variant="caption"
+              >
+                Policies
+              </Typography>
+            }
+          />
+        </ListItem>
+        <ListItem
+          secondaryAction={
             policiesCachedTimestamp && (
               <Tooltip title="Clear cached data">
                 <IconButton
@@ -337,7 +487,7 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
                 }}
                 variant="caption"
               >
-                Cached Data At
+                Cached Policies At
               </Typography>
             }
           />

@@ -11,10 +11,14 @@ interface OrgUnitsTreeProps {
 const TreeNodeSvgElement: FC<OrgUnitsTreeProps> = (props) => {
   const { nodeDatum, toggleNode, onNodeClick } = props;
 
-  const { useLivePoliciesCountByOrgUnitId } = useStore();
+  const { useLivePoliciesCountByOrgUnitId, useLiveDevicesCountByOrgUnitId } =
+    useStore();
 
   const liveStoredPoliciesCount =
     useLivePoliciesCountByOrgUnitId(nodeDatum.orgUnitId) || '--';
+
+  const liveStoredDevicesCount =
+    useLiveDevicesCountByOrgUnitId(nodeDatum.orgUnitId) || '--';
 
   return (
     <React.Fragment>
@@ -43,6 +47,10 @@ const TreeNodeSvgElement: FC<OrgUnitsTreeProps> = (props) => {
               ([labelKey, labelValue], i) => {
                 if (labelKey === 'policies') {
                   labelValue = liveStoredPoliciesCount;
+                }
+
+                if (labelKey === 'devices') {
+                  labelValue = liveStoredDevicesCount;
                 }
                 return (
                   <tspan

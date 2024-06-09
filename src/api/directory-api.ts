@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { setupAxiosInterceptors } from '@/api/axiosConfig';
 import { OrgUnitsResponseProps } from '@/types/orgUnits';
+import { chromeOsDevicesResponseProps } from '@/types/chromeOsDevices';
 
 class DirectoryApi {
   private axiosInstance = axios.create({
@@ -17,6 +18,15 @@ class DirectoryApi {
    */
   async listOrganizationalUnits(): Promise<OrgUnitsResponseProps> {
     let requestUrl = '/orgunits?type=ALL_INCLUDING_PARENT';
+
+    const response = await this.axiosInstance.get(requestUrl);
+    return response.data;
+  }
+
+  async listChromeOsDevicesByOrgUnitId(
+    orgUnitId: string,
+  ): Promise<chromeOsDevicesResponseProps> {
+    let requestUrl = `/devices/chromeos?projection=BASIC&orgUnitPath=${orgUnitId}`;
 
     const response = await this.axiosInstance.get(requestUrl);
     return response.data;

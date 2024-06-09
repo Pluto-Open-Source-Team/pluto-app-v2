@@ -1,6 +1,7 @@
 import { db } from '@/utils/db';
 import { PolicyTableProps } from '@/types/policy';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { chromeOsDevicesTableProps } from '@/types/chromeOsDevices';
 
 export const useStore = () => {
   const bulkPutPolicies = async (policies: PolicyTableProps[]) => {
@@ -29,11 +30,24 @@ export const useStore = () => {
     await db.delete({ disableAutoOpen: false });
   };
 
+  const bulkPutDevices = async (devices: chromeOsDevicesTableProps[]) => {
+    await db.devices.bulkPut(devices);
+  };
+
+  const useLiveDevicesCountByOrgUnitId = (orgUnitId: string) => {
+    return useLiveQuery(
+      () => db.devices.where('orgUnitId').equals(orgUnitId).count(),
+      [orgUnitId],
+    );
+  };
+
   return {
     bulkPutPolicies,
     useLivePoliciesByOrgUnitId,
     useLivePoliciesCountByOrgUnitId,
     deleteAllPoliciesByOrgUnitId,
     deleteAllRecords,
+    bulkPutDevices,
+    useLiveDevicesCountByOrgUnitId,
   };
 };

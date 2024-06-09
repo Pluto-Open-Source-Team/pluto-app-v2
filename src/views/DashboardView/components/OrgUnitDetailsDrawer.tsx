@@ -32,6 +32,7 @@ import useCacheSettings from '@/hooks/use-cache-settings';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { chromeOsDevicesTableProps } from '@/types/chromeOsDevices';
 import { keyframes } from '@emotion/react';
+import { googleUserTableProps } from '@/types/user';
 
 interface OrgUnitDetailsDrawerProps {
   open: boolean;
@@ -52,6 +53,8 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
     useLivePoliciesCountByOrgUnitId,
     bulkPutDevices,
     useLiveDevicesCountByOrgUnitId,
+    bulkPutUsers,
+    useLiveUsersCountByOrgUnitId,
   } = useStore();
 
   const liveStoredPolicies =
@@ -89,12 +92,14 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
       {
         loading: boolean;
         devicesData: chromeOsDevicesTableProps[];
+        usersData: googleUserTableProps[];
       }
     >
   >({
     [uniqueKey]: {
       loading: false,
       devicesData: [],
+      usersData: [],
     },
   });
 
@@ -224,6 +229,7 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
       setDevicesUsersStatus((prevState) => ({
         ...prevState,
         [uniqueKey]: {
+          ...prevState[uniqueKey],
           loading: true,
           devicesData: [],
         },
@@ -271,6 +277,62 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
           ...prevState[uniqueKey],
           loading: false,
           devicesData: [],
+        },
+      }));
+    }
+  }, [ouDetails.orgUnitId]);
+
+  const handleGetUsersCount = useCallback(async () => {
+    try {
+      setDevicesUsersStatus((prevState) => ({
+        ...prevState,
+        [uniqueKey]: {
+          ...prevState[uniqueKey],
+          loading: true,
+          usersData: [],
+        },
+      }));
+      const listUsersResponse = await directoryApi.listGoogleUsersByOrgUnitPath(
+        ouDetails.orgUnitPath,
+      );
+
+      if (listUsersResponse && listUsersResponse.users) {
+        const formattedUsers = listUsersResponse.users.map((_user) => ({
+          userId: _user.id,
+          id: uuidv4(),
+          orgUnitId: uniqueKey,
+          cachedAt: getCurrentDateTime(),
+        }));
+
+        if (cacheSettings.enableCaching) {
+          await bulkPutUsers(formattedUsers);
+        }
+
+        setDevicesUsersStatus((prevState) => ({
+          ...prevState,
+          [uniqueKey]: {
+            ...prevState[uniqueKey],
+            loading: false,
+            usersData: formattedUsers,
+          },
+        }));
+      } else {
+        setDevicesUsersStatus((prevState) => ({
+          ...prevState,
+          [uniqueKey]: {
+            ...prevState[uniqueKey],
+            loading: false,
+            usersData: [],
+          },
+        }));
+      }
+    } catch (err) {
+      setDevicesUsersStatus((prevState) => ({
+        ...prevState,
+        [uniqueKey]: {
+          ...prevState[uniqueKey],
+          loading: false,
+          usersData: [],
         },
       }));
     }
@@ -391,6 +453,47 @@ const OrgUnitDetailsDrawer: FC<OrgUnitDetailsDrawerProps> = (props) => {
                 variant="caption"
               >
                 OU Path
+              </Typography>
+            }
+          />
+        </ListItem>
+        <ListItem
+          secondaryAction={
+            <Tooltip title="Refresh users count">
+              <IconButton
+                edge="end"
+                aria-label="refresh"
+                color="primary"
+                size="large"
+                onClick={handleGetUsersCount}
+                disabled={devicesUsersStatus[uniqueKey]?.loading}
+              >
+                <RefreshIcon
+                  sx={{
+                    animation: devicesUsersStatus[uniqueKey]?.loading
+                      ? `${rotate} 0.5s linear infinite`
+                      : '',
+                  }}
+                />
+              </IconButton>
+            </Tooltip>
+          }
+        >
+          <ListItemText
+            primary={
+              <Typography variant="body1">
+                {useLiveUsersCountByOrgUnitId(ouDetails.orgUnitId) || '--'}
+              </Typography>
+            }
+            secondary={
+              <Typography
+                sx={{
+                  color: 'rgba(0, 0, 0, 0.6)',
+                  fontSize: '0.76rem',
+                }}
+                variant="caption"
+              >
+                Users
               </Typography>
             }
           />
